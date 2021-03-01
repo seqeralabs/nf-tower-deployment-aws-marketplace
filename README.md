@@ -8,7 +8,7 @@ This repository contains documentation for how to deploy Nextflow Tower Enterpri
 * The AWS CLI tool
 * An RDS MySQL instance 
 * SMTP Email Service
-* License and pull permissions for Nextflow Tower Enterprise via AWS Marketplace
+* License and access via AWS Marketplace
 
 Nextflow Tower Enterprise is an application server composed mainly of a Java backend, based on 
 the [Micronaut framework](https://micronaut.io/) and web frontend based on the [Angular](https://angular.io/)
