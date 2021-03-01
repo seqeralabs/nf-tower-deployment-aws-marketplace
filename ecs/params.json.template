@@ -1,0 +1,50 @@
+[
+    {
+      "ParameterKey": "ClusterName",
+      "ParameterValue": ""
+    }, 
+    {
+      "ParameterKey": "TowerSmtpUser",
+      "ParameterValue": ""
+    },
+    {
+        "ParameterKey": "TowerSmtpPassword",
+        "ParameterValue": ""
+    },
+    {
+        "ParameterKey": "TowerContactEmail",
+        "ParameterValue": ""
+    },
+    {
+        "ParameterKey": "TowerServerUrl",
+        "ParameterValue": ""
+    },
+    {
+        "ParameterKey": "TowerJwtSecret",
+        "ParameterValue": ""
+    },
+    {
+        "ParameterKey": "TowerCryptoSecret",
+        "ParameterValue": ""
+    },
+    {
+        "ParameterKey": "TowerDbUrl",
+        "ParameterValue": "tower"
+    },
+    {
+        "ParameterKey": "TowerDbUser",
+        "ParameterValue": "tower"
+    },
+    {
+        "ParameterKey": "TowerDbPassword",
+        "ParameterValue": "tower"
+    },
+    {
+        "ParameterKey": "TowerSmtpHost",
+        "ParameterValue": "email-smtp.eu-west-1.amazonaws.com"
+    },
+    {
+        "ParameterKey": "TowerSmtpPort",
+        "ParameterValue": "587"
+    },
+]

@@ -17,7 +17,7 @@ web framework.
 ## Availability 
 
 Nextflow Tower is distributed to customers as a collection of Docker containers available through the Nextflow Tower 
-container registry hosted on the AWS container service. These containers are also availible via the AWS Marketplace.
+container registry hosted on the AWS container service. These containers are also available via the AWS Marketplace.
 
 ## Configuration 
 

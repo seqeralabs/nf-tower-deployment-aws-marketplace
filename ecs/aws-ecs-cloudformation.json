@@ -1,0 +1,393 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Description" : "Nextflow Tower ECS template",
+    "Parameters": {
+        "ClusterName": {
+            "Type": "String",
+            "Description": "ECS cluster name"
+        },
+        "SMTPUser": {
+            "Type": "String",
+            "Description": "SMTP user for email login"
+        },
+        "SMTPPassword": {
+            "Type": "String",
+            "Description": "SMTP password for login"
+        },
+        "TowerEmail": {
+            "Type": "String",
+            "Description": "Email for login emails"
+        },
+        "ServerURL": {
+            "Type": "String",
+            "Description": "IP address of container instance"
+        },
+        "JWTSECRET": {
+            "Type": "String",
+            "Description": ">256 bit random string"
+        },
+        "CRYPTOSECRETKEY": {
+            "Type": "String",
+            "Description": ">256 bit random string"
+        },
+        "DBUSER": {
+            "Type": "String",
+            "Description": "Database user"
+        },
+        "DBPASSWORD": {
+            "Type": "String",
+            "Description": "Database password"
+        },
+        "SMTPHOST": {
+            "Type": "String",
+            "Description": "Email host"
+        },
+        "SMTPPORT": {
+            "Type": "String",
+            "Description": "SMTP Port"
+        },
+        "DBVOLUME": {
+            "Type": "String",
+            "Description": "Path for the database volume"
+        }
+        
+    },
+    "Resources" : {
+        "TowerTask": {
+            "Type": "AWS::ECS::TaskDefinition",
+            "Properties": {
+                "NetworkMode": "bridge",
+                "ContainerDefinitions": [{
+                    "Name": "db",
+                    "Image": "mysql:5.6",
+                    "Hostname": "db",
+                    "Memory": 2000,
+                    "Cpu": 0,
+                    "PortMappings": [{
+                        "ContainerPort": 3306,
+                        "HostPort": 3306
+                    }],
+                    "MountPoints": [
+                        {
+                            "SourceVolume": "dbvolume",
+                            "ContainerPath": "/var/lib/mysql",
+                            "ReadOnly": false
+                        }
+                    ],
+                    "Essential": true,
+                    "Environment": [{
+                            "Name": "MYSQL_ALLOW_EMPTY_PASSWORD",
+                            "Value": "'yes'"
+                        },
+                        {
+                            "Name": "MYSQL_USER",
+                            "Value": {
+                                "Ref": "DBUSER"
+                            }
+                        },
+                        {
+                            "Name": "MYSQL_PASSWORD",
+                            "Value": {
+                                "Ref": "DBPASSWORD"
+                            }
+                        },
+                        {
+                            "Name": "MYSQL_DATABASE",
+                            "Value": "tower"
+                        }
+                    ]
+                    },
+                    {
+                    "Name": "redis",
+                    "Image": "redis:5.0.8",
+                    "Memory": 2000,
+                    "Cpu": 0,
+                    "PortMappings": [{
+                        "ContainerPort": 6379,
+                        "HostPort": 6379
+                    }],
+                    "Command": ["--appendonly yes"]
+                    },
+                    {
+                    "Name": "cron",
+                    "Image": "195996028523.dkr.ecr.eu-west-1.amazonaws.com/nf-tower-enterprise/backend:v20.12.0",
+                    "Memory": 2000,
+                    "Cpu": 0,
+                    "Links": [
+                        "db",
+                        "redis"
+                    ],
+                    "DependsOn": [
+                        {
+                            "ContainerName": "db",
+                            "Condition": "START"
+                        },
+                        {
+                            "ContainerName": "redis",
+                            "Condition": "START" 
+                        }
+                    ],
+                    "WorkingDirectory": "/work",
+                    "EntryPoint": [
+                        "/bin/sh"
+                    ],
+                    "Command": [
+                            "-c",
+                            "/wait-for-it.sh db:3306 -t 60; /migrate-db.sh; /tower.sh"
+                    ],
+                    "Environment": [
+                        {
+                            "Name": "TOWER_CONTACT_EMAIL",
+                            "Value": {
+                                "Ref": "TowerEmail"
+                            }
+                        },
+                        {
+                            "Name": "TOWER_SMTP_HOST",
+                            "Value": {
+                                "Ref": "SMTPHOST"
+                            }
+                        },
+                        {
+                            "Name": "TOWER_SMTP_PORT",
+                            "Value": {
+                                "Ref": "SMTPPORT"
+                            }
+                        },
+                        {
+                            "Name": "TOWER_SMTP_USER",
+                            "Value": {
+                                "Ref": "SMTPUser"
+                            }
+                        },
+                        {
+                            "Name": "TOWER_SMTP_PASSWORD",
+                            "Value": {
+                                "Ref": "SMTPPassword"
+                            }
+                        },
+                        {
+                            "Name": "TOWER_DB_URL",
+                            "Value": "jdbc:mysql://db:3306/tower"
+                        },
+                        {
+                            "Name": "TOWER_DB_DRIVER",
+                            "Value": "com.mysql.cj.jdbc.Driver"
+                        },
+                        {
+                            "Name": "TOWER_DB_DIALECT",
+                            "Value": "io.seqera.util.MySQL55DialectCollateBin"
+                        },
+                        {
+                            "Name": "TOWER_DB_USER",
+                            "Value": {
+                                "Ref": "DBUSER"
+                            }
+                        },
+                        {
+                            "Name": "TOWER_DB_PASSWORD",
+                            "Value": {
+                                "Ref": "DBPASSWORD"
+                            }
+                        },
+                        {
+                            "Name": "TOWER_SERVER_URL",
+                            "Value": {
+                                "Ref": "ServerURL"
+                            }
+                        },
+                        {
+                            "Name": "MICRONAUT_ENVIRONMENTS",
+                            "Value": "prod,redis,cron,awsbatch-platform,gls-platform,lsf-platform,slurm-platform"
+                        },
+                        {
+                            "Name": "TOWER_JWT_SECRET",
+                            "Value": {
+                                "Ref": "JWTSECRET"
+                            }
+                        },
+                        {
+                            "Name": "TOWER_CRYPTO_SECRETKEY",
+                            "Value": {
+                                "Ref": "CRYPTOSECRETKEY"
+                            }
+                        },
+                        {
+                            "Name": "FLYWAY_LOCATIONS",
+                            "Value": "classpath:db-schema/mysql"
+                        }
+                    ]
+
+                    },
+                    {
+                    "Name": "frontend",
+                    "Image": "195996028523.dkr.ecr.eu-west-1.amazonaws.com/nf-tower-enterprise/frontend:v20.12.0",
+                    "Memory": 2000,
+                    "Cpu": 0,
+                    "Essential": false,
+                    "PortMappings": [{
+                        "ContainerPort": 80,
+                        "HostPort": 80
+                    }],
+                    "Links": [
+                        "backend"
+                    ],
+                    "DependsOn": [
+                        {
+                            "ContainerName": "backend",
+                            "Condition": "START"
+                        }
+                    ]
+                    },
+                    {
+                    "Name": "backend",
+                    "Hostname": "backend",
+                    "Memory": 2000,
+                    "Cpu": 0,
+                    "Image": "195996028523.dkr.ecr.eu-west-1.amazonaws.com/nf-tower-enterprise/backend:v20.12.0",
+                    "PortMappings": [{
+                        "ContainerPort": 8080,
+                        "HostPort": 8080
+                    }],
+                    "Essential": false,
+                    "Links": [
+                        "db",
+                        "redis",
+                        "cron"
+                    ],
+                    "WorkingDirectory": "/work",
+                    "DependsOn": [
+                            {
+                                "ContainerName": "db",
+                                "Condition": "START"
+                            },
+                            {
+                                "ContainerName": "cron",
+                                "Condition": "START"
+                            },
+                            {
+                                "ContainerName": "redis",
+                                "Condition": "START"
+                            }
+                    ],
+                    "Environment": [
+                        {
+                            "Name": "TOWER_CONTACT_EMAIL",
+                            "Value": {
+                                "Ref": "TowerEmail"
+                            }
+                        },
+                        {
+                            "Name": "TOWER_SMTP_HOST",
+                            "Value": {
+                                "Ref": "SMTPHOST"
+                            }
+                        },
+                        {
+                            "Name": "TOWER_SMTP_PORT",
+                            "Value": {
+                                "Ref": "SMTPPORT"
+                            }
+                        },
+                        {
+                            "Name": "TOWER_SMTP_USER",
+                            "Value": {
+                                "Ref": "SMTPUser"
+                            }
+                        },
+                        {
+                            "Name": "TOWER_SMTP_PASSWORD",
+                            "Value": {
+                                "Ref": "SMTPPassword"
+                            }
+                        },
+                        {
+                            "Name": "TOWER_DB_URL",
+                            "Value": "jdbc:mysql://db:3306/tower"
+                        },
+                        {
+                            "Name": "TOWER_DB_DRIVER",
+                            "Value": "com.mysql.cj.jdbc.Driver"
+                        },
+                        {
+                            "Name": "TOWER_DB_DIALECT",
+                            "Value": "io.seqera.util.MySQL55DialectCollateBin"
+                        },
+                        {
+                            "Name": "TOWER_DB_USER",
+                            "Value": {
+                                "Ref": "DBUSER"
+                            }
+                        },
+                        {
+                            "Name": "TOWER_DB_PASSWORD",
+                            "Value": {
+                                "Ref": "DBPASSWORD"
+                            }
+                        },
+                        {
+                            "Name": "TOWER_SERVER_URL",
+                            "Value": {
+                                "Ref": "ServerURL"
+                            }
+                        },
+                        {
+                            "Name": "MICRONAUT_ENVIRONMENTS",
+                            "Value": "prod,redis,ha,awsbatch-platform,gls-platform,lsf-platform,slurm-platform"
+                        },
+                        {
+                            "Name": "TOWER_JWT_SECRET",
+                            "Value": {
+                                "Ref": "JWTSECRET"
+                            }
+                        },
+                        {
+                            "Name": "TOWER_CRYPTO_SECRETKEY",
+                            "Value": {
+                                "Ref": "CRYPTOSECRETKEY"
+                            }
+                        },
+                        {
+                            "Name": "FLYWAY_LOCATIONS",
+                            "Value": "classpath:db-schema/mysql"
+                        }
+                    ],
+                    "EntryPoint": [
+                        "/bin/sh"
+                     ],
+                    "Command": [
+                        "-c",
+                        "/wait-for-it.sh db:3306 -t 60; /tower.sh"
+                    ]
+                }],
+                "Volumes":[
+                    {
+                        "Name": "dbvolume",
+                        "Host": {
+                            "SourcePath": {
+                                "Ref": "DBVOLUME"
+                            }
+                        }
+                    }
+    
+                ]
+            }
+
+        },
+        "TowerService": {
+            "Type" : "AWS::ECS::Service",
+            "Properties" : {
+                "Cluster": {
+                    "Ref": "ClusterName"
+                },
+                "DesiredCount" : 1,
+                "ServiceName" : "TowerService",
+                "TaskDefinition": {
+                    "Ref": "TowerTask"
+                },
+                "LaunchType": "EC2"
+            }
+
+        }
+    }
+  }
