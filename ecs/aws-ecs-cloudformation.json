@@ -6,97 +6,62 @@
             "Type": "String",
             "Description": "ECS cluster name"
         },
-        "SMTPUser": {
+        "TowerSmtpHost": {
             "Type": "String",
-            "Description": "SMTP user for email login"
+            "Description": "SMTP server hostname"
         },
-        "SMTPPassword": {
+        "TowerSmtpPort": {
             "Type": "String",
-            "Description": "SMTP password for login"
+            "Description": "SMTP server port"
         },
-        "TowerEmail": {
+        "TowerSmtpUser": {
+            "Type": "String",
+            "Description": "SMTP server username",
+            "NoEcho": "true"
+        },
+        "TowerSmtpPassword": {
+            "Type": "String",
+            "Description": "SMTP server password",
+            "NoEcho": "true"
+        },
+        "TowerContactEmail": {
             "Type": "String",
             "Description": "Email for login emails"
         },
-        "ServerURL": {
+        "TowerServerUrl": {
             "Type": "String",
             "Description": "IP address of container instance"
         },
-        "JWTSECRET": {
+        "TowerJwtSecret": {
             "Type": "String",
-            "Description": ">256 bit random string"
+            "Description": ">256 bit random string",
+            "NoEcho": "true"
         },
-        "CRYPTOSECRETKEY": {
+        "TowerCryptoSecretkey": {
             "Type": "String",
-            "Description": ">256 bit random string"
+            "Description": ">256 bit random string",
+            "NoEcho": "true"
         },
-        "DBUSER": {
+        "TowerDbUrl": {
             "Type": "String",
-            "Description": "Database user"
+            "Description": "MySQL DB connection URL"
         },
-        "DBPASSWORD": {
+        "TowerDbUser": {
             "Type": "String",
-            "Description": "Database password"
+            "Description": "MySQL DB username"
         },
-        "SMTPHOST": {
+        "TowerDbPassword": {
             "Type": "String",
-            "Description": "Email host"
-        },
-        "SMTPPORT": {
-            "Type": "String",
-            "Description": "SMTP Port"
-        },
-        "DBVOLUME": {
-            "Type": "String",
-            "Description": "Path for the database volume"
+            "Description": "MySQL DB password",
+            "NoEcho": "true"
         }
-        
     },
     "Resources" : {
         "TowerTask": {
             "Type": "AWS::ECS::TaskDefinition",
             "Properties": {
                 "NetworkMode": "bridge",
-                "ContainerDefinitions": [{
-                    "Name": "db",
-                    "Image": "mysql:5.6",
-                    "Hostname": "db",
-                    "Memory": 2000,
-                    "Cpu": 0,
-                    "PortMappings": [{
-                        "ContainerPort": 3306,
-                        "HostPort": 3306
-                    }],
-                    "MountPoints": [
-                        {
-                            "SourceVolume": "dbvolume",
-                            "ContainerPath": "/var/lib/mysql",
-                            "ReadOnly": false
-                        }
-                    ],
-                    "Essential": true,
-                    "Environment": [{
-                            "Name": "MYSQL_ALLOW_EMPTY_PASSWORD",
-                            "Value": "'yes'"
-                        },
-                        {
-                            "Name": "MYSQL_USER",
-                            "Value": {
-                                "Ref": "DBUSER"
-                            }
-                        },
-                        {
-                            "Name": "MYSQL_PASSWORD",
-                            "Value": {
-                                "Ref": "DBPASSWORD"
-                            }
-                        },
-                        {
-                            "Name": "MYSQL_DATABASE",
-                            "Value": "tower"
-                        }
-                    ]
-                    },
+                "ContainerDefinitions": [
                     {
                     "Name": "redis",
                     "Image": "redis:5.0.8",
@@ -114,61 +79,53 @@
                     "Memory": 2000,
                     "Cpu": 0,
                     "Links": [
-                        "db",
                         "redis"
                     ],
                     "DependsOn": [
-                        {
-                            "ContainerName": "db",
-                            "Condition": "START"
-                        },
                         {
                             "ContainerName": "redis",
                             "Condition": "START" 
                         }
                     ],
                     "WorkingDirectory": "/work",
-                    "EntryPoint": [
-                        "/bin/sh"
-                    ],
-                    "Command": [
-                            "-c",
-                            "/wait-for-it.sh db:3306 -t 60; /migrate-db.sh; /tower.sh"
-                    ],
+                    "EntryPoint": [ "/bin/sh" ],
+                    "Command": [ "-c", "/migrate-db.sh; /tower.sh" ],
                     "Environment": [
                         {
                             "Name": "TOWER_CONTACT_EMAIL",
                             "Value": {
-                                "Ref": "TowerEmail"
+                                "Ref": "TowerContactEmail"
                             }
                         },
                         {
                             "Name": "TOWER_SMTP_HOST",
                             "Value": {
-                                "Ref": "SMTPHOST"
+                                "Ref": "TowerSmtpHost"
                             }
                         },
                         {
                             "Name": "TOWER_SMTP_PORT",
                             "Value": {
-                                "Ref": "SMTPPORT"
+                                "Ref": "TowerSmtpPort"
                             }
                         },
                         {
                             "Name": "TOWER_SMTP_USER",
                             "Value": {
-                                "Ref": "SMTPUser"
+                                "Ref": "TowerSmtpUser"
                             }
                         },
                         {
                             "Name": "TOWER_SMTP_PASSWORD",
                             "Value": {
-                                "Ref": "SMTPPassword"
+                                "Ref": "TowerSmtpPassword"
                             }
                         },
                         {
                             "Name": "TOWER_DB_URL",
-                            "Value": "jdbc:mysql://db:3306/tower"
+                            "Value": {
+                                "Ref": "TowerDbUrl"
+                            }
                         },
                         {
                             "Name": "TOWER_DB_DRIVER",
@@ -181,19 +138,19 @@
                         {
                             "Name": "TOWER_DB_USER",
                             "Value": {
-                                "Ref": "DBUSER"
+                                "Ref": "TowerDbUser"
                             }
                         },
                         {
                             "Name": "TOWER_DB_PASSWORD",
                             "Value": {
-                                "Ref": "DBPASSWORD"
+                                "Ref": "TowerDbPassword"
                             }
                         },
                         {
                             "Name": "TOWER_SERVER_URL",
                             "Value": {
-                                "Ref": "ServerURL"
+                                "Ref": "TowerServerUrl"
                             }
                         },
                         {
@@ -203,13 +160,13 @@
                         {
                             "Name": "TOWER_JWT_SECRET",
                             "Value": {
-                                "Ref": "JWTSECRET"
+                                "Ref": "TowerJwtSecret"
                             }
                         },
                         {
                             "Name": "TOWER_CRYPTO_SECRETKEY",
                             "Value": {
-                                "Ref": "CRYPTOSECRETKEY"
+                                "Ref": "TowerCryptoSecret"
                             }
                         },
                         {
@@ -217,7 +174,6 @@
                             "Value": "classpath:db-schema/mysql"
                         }
                     ]
-
                     },
                     {
                     "Name": "frontend",
@@ -251,7 +207,6 @@
                     }],
                     "Essential": false,
                     "Links": [
-                        "db",
                         "redis",
                         "cron"
                     ],
@@ -274,36 +229,38 @@
                         {
                             "Name": "TOWER_CONTACT_EMAIL",
                             "Value": {
-                                "Ref": "TowerEmail"
+                                "Ref": "TowerContactEmail"
                             }
                         },
                         {
                             "Name": "TOWER_SMTP_HOST",
                             "Value": {
-                                "Ref": "SMTPHOST"
+                                "Ref": "TowerSmtpHost"
                             }
                         },
                         {
                             "Name": "TOWER_SMTP_PORT",
                             "Value": {
-                                "Ref": "SMTPPORT"
+                                "Ref": "TowerSmtpPort"
                             }
                         },
                         {
                             "Name": "TOWER_SMTP_USER",
                             "Value": {
-                                "Ref": "SMTPUser"
+                                "Ref": "TowerSmtpUser"
                             }
                         },
                         {
                             "Name": "TOWER_SMTP_PASSWORD",
                             "Value": {
-                                "Ref": "SMTPPassword"
+                                "Ref": "TowerSmtpPassword"
                             }
                         },
                         {
                             "Name": "TOWER_DB_URL",
-                            "Value": "jdbc:mysql://db:3306/tower"
+                            "Value": {
+                                "Ref": "TowerDbUrl"
+                            }
                         },
                         {
                             "Name": "TOWER_DB_DRIVER",
@@ -316,19 +273,19 @@
                         {
                             "Name": "TOWER_DB_USER",
                             "Value": {
-                                "Ref": "DBUSER"
+                                "Ref": "TowerDbUser"
                             }
                         },
                         {
                             "Name": "TOWER_DB_PASSWORD",
                             "Value": {
-                                "Ref": "DBPASSWORD"
+                                "Ref": "TowerDbPassword"
                             }
                         },
                         {
                             "Name": "TOWER_SERVER_URL",
                             "Value": {
-                                "Ref": "ServerURL"
+                                "Ref": "TowerServerUrl"
                             }
                         },
                         {
@@ -338,13 +295,13 @@
                         {
                             "Name": "TOWER_JWT_SECRET",
                             "Value": {
-                                "Ref": "JWTSECRET"
+                                "Ref": "TowerJwtSecret"
                             }
                         },
                         {
                             "Name": "TOWER_CRYPTO_SECRETKEY",
                             "Value": {
-                                "Ref": "CRYPTOSECRETKEY"
+                                "Ref": "TowerCryptoSecretkey"
                             }
                         },
                         {
@@ -352,27 +309,10 @@
                             "Value": "classpath:db-schema/mysql"
                         }
                     ],
-                    "EntryPoint": [
-                        "/bin/sh"
-                     ],
-                    "Command": [
-                        "-c",
-                        "/wait-for-it.sh db:3306 -t 60; /tower.sh"
-                    ]
-                }],
-                "Volumes":[
-                    {
-                        "Name": "dbvolume",
-                        "Host": {
-                            "SourcePath": {
-                                "Ref": "DBVOLUME"
-                            }
-                        }
-                    }
-    
-                ]
+                    "EntryPoint": [ "/bin/sh" ],
+                    "Command": [ "-c", "/tower.sh" ]
+                }]
             }
-
         },
         "TowerService": {
             "Type" : "AWS::ECS::Service",
@@ -387,7 +327,6 @@
                 },
                 "LaunchType": "EC2"
             }
-
         }
     }
   }
