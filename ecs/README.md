@@ -62,7 +62,20 @@ Create an SMTP IAM User and recored credentials, e.g.
 * SECRET ACCESS: `AKIAS3ISGBZV5Z5BZHFR`
 * SECRET KEY: `BOcG7nJMStdoy4kjxRvL/068DL2Shx1mW20Bg7Whtt5Q`
 
-## 3. Update the CloudFormation parameter JSON
+
+## 4. Create an database MySQL database with RDS
+
+* Select 'Easy create' and configure with:
+* Engine type: MySQL
+* DB instance size: Dev/Test
+* DB instance identifier: `tower`
+* Master username: `tower`
+* Master password: <record for DBPASSWORD>
+* Select "Create database"
+
+Once the database has been setup, record the endpoint for the `TowerDbUrl`.
+
+## 4. Update the CloudFormation parameter JSON
 
 Copy `params.json.template` to `params.json` and update values
 
@@ -73,13 +86,15 @@ Copy `params.json.template` to `params.json` and update values
 * ServerURL: The Nextflow Tower HTTP endpoint e.g. https://tower.your-company.com
 * JWTSECRET: Secret used to generate the login JWT token. Use a long random string (35 chars or more).
 * CRYPTOSECRETKEY: Random secret key used to encrypt user credentials.
+* TowerDbUrl: 
 * DBUSER: MySQL connection user name.
 * DBPASSWORD: MySQL connection user password.
 * SMTPHOST: Your mail server host name.
 * SMTPPORT: Your mail server port.
 * DBVOLUME: Directory used for Tower database
 
-## 4. Create the Cloudformation stack
+
+## 5. Create the Cloudformation stack
 
 Running the following command will launch the containers on the specified ECS cluster.
 
@@ -89,7 +104,6 @@ aws cloudformation create-stack \
     --template-body file://aws-ecs-cloudformation.json \
     --parameters file://params.json
 ```
-
 
 ## 5. Delete the Cloudformation stack (optional)
 
