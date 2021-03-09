@@ -25,7 +25,7 @@ Amazon ECS -> Clusters -> EC2 Linux + Networking
 * EC2 instance type: c4.2xlarge
 * Number of instances: 1
 * EC2 AMI id: Amazon Linux 2
-* Root EBS Volume Size (GiB): none
+* Root EBS Volume Size (GiB): 30 GB
 * Key pair: none
 
 
@@ -36,12 +36,13 @@ Amazon ECS -> Clusters -> EC2 Linux + Networking
 
 #### Container instance IAM role
 
-* Create new role (if ecsIntance role doesn't exist)
+* Create new role (if ecsInstanceRole doesn't exist)
 
 
 #### Obtain Instance `ServerURL`
 
-* Record the Public IP of the instance in the ECS cluster e.g. `3.122.246.202`
+* Select 'View Cluster' -> 'ECS Instances' - > 'EC2 Instance' -> 'Instance Id'
+* Record the Public IPv4 of the instance e.g. `3.122.246.202`
 
 
 ## 2. Configure an SMTP server
