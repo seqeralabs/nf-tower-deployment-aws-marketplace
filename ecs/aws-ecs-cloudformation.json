@@ -6,43 +6,43 @@
             "Type": "String",
             "Description": "ECS cluster name"
         },
-        "SMTPUser": {
+        "TowerSmtpUser": {
             "Type": "String",
             "Description": "SMTP user for email login"
         },
-        "SMTPPassword": {
+        "TowerSmtpPassword": {
             "Type": "String",
             "Description": "SMTP password for login"
         },
-        "TowerEmail": {
+        "TowerContactEmail": {
             "Type": "String",
             "Description": "Email for login emails"
         },
-        "ServerURL": {
+        "TowerServerUrl": {
             "Type": "String",
             "Description": "IP address of container instance"
         },
-        "JWTSECRET": {
+        "TowerJwtSectret": {
             "Type": "String",
             "Description": ">256 bit random string"
         },
-        "CRYPTOSECRETKEY": {
+        "TowerCryptoSecret": {
             "Type": "String",
             "Description": ">256 bit random string"
         },
-        "DBUSER": {
+        "TowerDbUrl": {
             "Type": "String",
             "Description": "Database user"
         },
-        "DBPASSWORD": {
+        "TowerDbPasword": {
             "Type": "String",
             "Description": "Database password"
         },
-        "SMTPHOST": {
+        "TowerSmtpHost": {
             "Type": "String",
             "Description": "Email host"
         },
-        "SMTPPORT": {
+        "TowerSmtpPort": {
             "Type": "String",
             "Description": "SMTP Port"
         },
@@ -110,7 +110,7 @@
                     },
                     {
                     "Name": "cron",
-                    "Image": "195996028523.dkr.ecr.eu-west-1.amazonaws.com/nf-tower-enterprise/backend:v20.12.0",
+                    "Image": "709825985650.dkr.ecr.us-east-1.amazonaws.com/seqera-labs/nf-tower-enterprise/backend:v20.12.2",
                     "Memory": 2000,
                     "Cpu": 0,
                     "Links": [
@@ -221,7 +221,7 @@
                     },
                     {
                     "Name": "frontend",
-                    "Image": "195996028523.dkr.ecr.eu-west-1.amazonaws.com/nf-tower-enterprise/frontend:v20.12.0",
+                    "Image": "709825985650.dkr.ecr.us-east-1.amazonaws.com/seqera-labs/nf-tower-enterprise/frontend:v20.12.2",
                     "Memory": 2000,
                     "Cpu": 0,
                     "Essential": false,
@@ -244,7 +244,7 @@
                     "Hostname": "backend",
                     "Memory": 2000,
                     "Cpu": 0,
-                    "Image": "195996028523.dkr.ecr.eu-west-1.amazonaws.com/nf-tower-enterprise/backend:v20.12.0",
+                    "Image": "709825985650.dkr.ecr.us-east-1.amazonaws.com/seqera-labs/nf-tower-enterprise/backend:v20.12.2",
                     "PortMappings": [{
                         "ContainerPort": 8080,
                         "HostPort": 8080
