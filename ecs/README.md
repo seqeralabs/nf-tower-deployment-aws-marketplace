@@ -73,9 +73,13 @@ Create an SMTP IAM User and recored credentials, e.g.
 * Master password: <record for DBPASSWORD>
 * Select "Create database"
 
-Once the database has been setup, record the endpoint for the `TowerDbUrl`.
+Once the database has been setup, record the endpoint for the `TowerDbUrl` in the format:
+`jdbc:mysql://tower.c5r6mzfoj9im.us-east-2.rds.amazonaws.com:3306/tower`
 
-## 4. Update the CloudFormation parameter JSON
+## 5. Set up the MySQL database.
+
+
+## 6. Update the CloudFormation parameter JSON
 
 Copy `params.json.template` to `params.json` and update values
 
@@ -94,7 +98,7 @@ Copy `params.json.template` to `params.json` and update values
 * DBVOLUME: Directory used for Tower database
 
 
-## 5. Create the Cloudformation stack
+## 7. Create the Cloudformation stack
 
 Running the following command will launch the containers on the specified ECS cluster.
 
@@ -105,7 +109,7 @@ aws cloudformation create-stack \
     --parameters file://params.json
 ```
 
-## 5. Delete the Cloudformation stack (optional)
+## 8. Delete the Cloudformation stack (optional)
 
 If you obtain any errors, you can delete stack at any moment and change the parameters.
 
