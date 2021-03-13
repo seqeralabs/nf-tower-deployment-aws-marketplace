@@ -24,7 +24,7 @@
         "ParameterValue": ""
     },
     {
-        "ParameterKey": "TowerCryptoSecret",
+        "ParameterKey": "TowerCryptoSecretkey",
         "ParameterValue": ""
     },
     {
@@ -46,5 +46,5 @@
     {
         "ParameterKey": "TowerSmtpPort",
         "ParameterValue": "587"
-    },
+    }
 ]
