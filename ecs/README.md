@@ -65,9 +65,11 @@ Create an SMTP IAM User and recored credentials, e.g.
 
 ## 4. Create an database MySQL database with RDS
 
-* Select 'Easy create' and configure with:
-* Engine type: MySQL
-* DB instance size: Dev/Test
+* Select 'Standard create' and configure with:
+* Engine type: Amazon Aurora
+* Edition: Amazon Aurora with MySQL compatibility
+* Capacity type: Serverless
+* Version: Aurora (MySQL 5.7)
 * DB instance identifier: `tower`
 * Master username: `tower`
 * Master password: <record for DBPASSWORD>
