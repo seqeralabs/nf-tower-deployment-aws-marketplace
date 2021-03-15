@@ -71,8 +71,8 @@ Create an SMTP IAM User and recored credentials, e.g.
 * Capacity type: Serverless
 * Version: Aurora (MySQL 5.7)
 * DB instance identifier: `tower`
-* Master username: `tower`
-* Master password: <record for DBPASSWORD>
+* Master username: `admin`
+* Master password: <password>
 * Select "Create database"
 
 Once the database has been setup, record the endpoint for the `TowerDbUrl` in the format:
@@ -80,6 +80,17 @@ Once the database has been setup, record the endpoint for the `TowerDbUrl` in th
 
 ## 5. Set up the MySQL database.
 
+* Select 'Query Editor' from the RDS console.
+* Enter the credentials from above to access the database
+* Modify the database to create the tables and user access:
+
+```
+    CREATE DATABASE tower;
+    ALTER DATABASE tower CHARACTER SET utf8 COLLATE utf8_bin;
+    CREATE USER 'tower' IDENTIFIED BY <password>;    
+    GRANT ALL PRIVILEGES ON tower.* TO tower@'%' ;
+```
+Record the user and password for the next steps.
 
 ## 6. Update the CloudFormation parameter JSON
 
@@ -92,7 +103,7 @@ Copy `params.json.template` to `params.json` and update values
 * ServerURL: The Nextflow Tower HTTP endpoint e.g. https://tower.your-company.com
 * JWTSECRET: Secret used to generate the login JWT token. Use a long random string (35 chars or more).
 * CRYPTOSECRETKEY: Random secret key used to encrypt user credentials.
-* TowerDbUrl: 
+* TowerDbUrl: `jdbc:mysql://<db-instance>.c5r6mzfoj9im.us-east-2.rds.amazonaws.com:3306/tower`
 * DBUSER: MySQL connection user name.
 * DBPASSWORD: MySQL connection user password.
 * SMTPHOST: Your mail server host name.
