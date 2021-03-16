@@ -5,9 +5,8 @@ Deployment for Tower onto an AWS ECS cluster.
 ## Requirements
 
 * An AWS Account
-* The AWS CLI tool 
-* Pull permissions for Nextflow Tower container registry via AWS Marketplace
-* License/access via AWS Marketplace
+* The AWS CLI tool
+* License subscription via AWS Marketplace
 
 ## 1. Configure an AWS ECS cluster
 
