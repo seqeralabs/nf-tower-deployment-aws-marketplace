@@ -75,7 +75,7 @@
                     },
                     {
                     "Name": "cron",
-                    "Image": "195996028523.dkr.ecr.eu-west-1.amazonaws.com/nf-tower-enterprise/backend:v20.12.0",
+                    "Image": "709825985650.dkr.ecr.us-east-1.amazonaws.com/seqera-labs/nf-tower-enterprise/backend:v20.12.0",
                     "Memory": 2000,
                     "Cpu": 0,
                     "Links": [
@@ -177,7 +177,7 @@
                     },
                     {
                     "Name": "frontend",
-                    "Image": "195996028523.dkr.ecr.eu-west-1.amazonaws.com/nf-tower-enterprise/frontend:v20.12.0",
+                    "Image": "709825985650.dkr.ecr.us-east-1.amazonaws.com/seqera-labs/nf-tower-enterprise/frontend:v20.12.0",
                     "Memory": 2000,
                     "Cpu": 0,
                     "Essential": false,
@@ -200,7 +200,7 @@
                     "Hostname": "backend",
                     "Memory": 2000,
                     "Cpu": 0,
-                    "Image": "195996028523.dkr.ecr.eu-west-1.amazonaws.com/nf-tower-enterprise/backend:v20.12.0",
+                    "Image": "709825985650.dkr.ecr.us-east-1.amazonaws.com/seqera-labs/nf-tower-enterprise/backend:v20.12.0",
                     "PortMappings": [{
                         "ContainerPort": 8080,
                         "HostPort": 8080
