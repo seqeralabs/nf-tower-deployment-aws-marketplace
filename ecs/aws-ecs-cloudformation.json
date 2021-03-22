@@ -155,7 +155,7 @@
                         },
                         {
                             "Name": "MICRONAUT_ENVIRONMENTS",
-                            "Value": "prod,redis,cron,awsbatch-platform,gls-platform,lsf-platform,slurm-platform"
+                            "Value": "prod,redis,cron,aws-mktp,awsbatch-platform,gls-platform,lsf-platform,slurm-platform"
                         },
                         {
                             "Name": "TOWER_JWT_SECRET",
