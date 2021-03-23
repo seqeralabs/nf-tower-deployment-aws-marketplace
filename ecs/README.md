@@ -91,6 +91,8 @@ Once the database has been setup, record the endpoint for the `TowerDbUrl` in th
 ```
 Record the user and password for the next steps.
 
+NOTE: Ensure the RDS database and ECS Cluster on the same VPC/SG with the 3306 port inbound open
+
 ## 5. Update the CloudFormation parameter JSON
 
 Copy `params.json.template` to `params.json` and update values
